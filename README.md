@@ -1,2 +1,2 @@
 # PingPongGame
-A simple Ping Pong Game build for the Web with a liitle help from ChatGPT
+A simple Ping Pong Game build for the Web with a litle help from ChatGPT
