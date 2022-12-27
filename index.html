@@ -6,11 +6,65 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../css/style.css">
     <script defer src="../js/main.js"></script>
-    <title>Canvas Test</title>
+    <title>Ping Pong</title>
 </head>
 <body id="body">
-    <div class="MainGrid">
-        <canvas id="CanvasMain"></canvas>
+    <div class="text-container">
+        <h1 id="title">Ping Pong Game</h1>
+        <h3 id="goal">First to 5 Wins</h3>
+    </div>
+    <div class="canvas-container">
+        <canvas id="Canvas"></canvas>
+
+    </div>
+    <div class="interfaces">
+        <div id="play-options">
+            <a href="?t=offline">
+                <button class="btn-1"><h3>Play Offline</h3></button>
+            </a>
+            <a href="?t=online">
+                <button class="btn-1"><h3>Play Online</h3></button>
+            </a>
+        </div>
+
+        <div id="play-online-setup">
+            <h3>Play Online</h3>
+            <a>Not yet Available</a>
+
+            <a href="/">
+                <button class="btn-1"><h3>Back</h3></button>
+            </a>
+        </div>
+
+        <div id="play-offline-setup">
+            <h3>Play Offline</h3>
+
+            <a href="/?play=easy">
+                <button class="btn-1" style="width: 250px"><h3>  Difficulty Easy  </h3></button>
+            </a>
+
+            <a href="/?play=medium">
+                <button class="btn-1" style="width: 250px"><h3>Difficulty Medium</h3></button>
+            </a>
+
+            <a href="/?play=hard">
+                <button class="btn-1" style="width: 250px"><h3>Difficulty Hard</h3></button>
+            </a>
+
+            <a href="/">
+                <button class="btn-1"><h3>Back</h3></button>
+            </a>
+        </div>
+
+        <div id="gameover">
+            <h1>Game Over</h1>
+            <a href="?play=offline" id="play-again">
+                <button class="btn-1"><h3>Play Again</h3></button>
+            </a>
+            <a href="/">
+                <button class="btn-1"><h3>Home</h3></button>
+            </a>
+        </div>
     </div>
 </body>
 </html>
