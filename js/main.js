@@ -55,11 +55,11 @@ let difficulty = .05;
 
 function cheackfordificulty() {
     if( getURlParamater("play") == "easy") {
-        difficulty = .025
+        difficulty = .05
         StartGame()
     }
     if( getURlParamater("play") == "medium") {
-        difficulty = .05
+        difficulty = .1
         StartGame()
     }
     if( getURlParamater("play") == "hard") {
