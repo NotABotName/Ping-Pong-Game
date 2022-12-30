@@ -96,7 +96,7 @@ canvas {
     place-items: center;
 }
 
-#play-options, #gameover, #play-offline-setup, #play-online-setup {
+.interface {
     position: absolute;
     display: grid;
     place-items: center;

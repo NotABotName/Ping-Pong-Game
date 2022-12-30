@@ -1,93 +1,89 @@
-const body = document.getElementById("body")
+import {getURlParamater, addURLParamter} from './modules/URLParams.js';
+
+//HTML Variables
 const canvas = document.getElementById("Canvas")
-const playoptions = document.getElementById("play-options")
-const offlinesetup = document.getElementById("play-offline-setup")
-const onlinesetup = document.getElementById("play-online-setup")
-const GOScreen = document.getElementById("gameover")
 const replaybnt = document.getElementById("play-again")
 var c = canvas.getContext("2d")
-
-GOScreen.style.display = 'none'
-offlinesetup.style.display = 'none'
-onlinesetup.style.display = 'none'
-
-
-var lastUpdate = Date.now();
-var dt = 0;
 
 canvas.height = canvas.getBoundingClientRect().height;
 canvas.width = canvas.getBoundingClientRect().width;
 
+const GOScreen = document.getElementById("gameover")
+const playoptions = document.getElementById("play-options")
+const offlinesetup = document.getElementById("play-offline-setup")
+const onlinesetup = document.getElementById("play-online-setup")
+const watchaisetup = document.getElementById("watch-ai-setup")
+
+const interfaces = document.getElementsByClassName("interface")
+
+// Game Variables
 var hasgamestarted = false;
-
-var colorVariable = "white"
-
-// Check if the browser supports CSS variables
-if (CSS.supports('color', 'var(--color-4)')) {
-    // Get the value of the CSS property using the CSS variable
-    colorVariable = document.documentElement.style.getPropertyValue('--color-4');
-}
-
-function getURlParamater(ParamaterNmae) {
-    const Paramaters = new URLSearchParams(window.location.search)
-    return Paramaters.get(ParamaterNmae)
-}
-
-function addURLParamter(key, value) {
-    const Paramaters = new URLSearchParams(window.location.search)
-    Paramaters.set(key, value)
-    const newRelativePath = window.location.pathname + "?" + Paramaters.toString()
-    history.pushState(null, "", newRelativePath)
-
-}
-
-if( getURlParamater("t") == "offline") {
-    playoptions.style.display = 'none'
-    offlinesetup.style.display = 'grid'
-}
-
-if( getURlParamater("t") == "online") {
-    playoptions.style.display = 'none'
-    onlinesetup.style.display = 'grid'
-}
 
 let difficulty = .05;
 
+let scoreOne = 0;
+let scoreTwo = 0;
+
+let mode = getURlParamater("m");
+
+// CSS Variables
+function switchinterface(ininterface) {
+    for (let i = 0; i < interfaces.length; i++) {
+        if(interfaces[i] == ininterface) {
+            interfaces[i].style.display = 'grid'
+        } else {
+            interfaces[i].style.display = 'none'
+        }
+    }
+}
+switchinterface(playoptions)
+
+var colorVariable = "white"
+
+if (CSS.supports('color', 'var(--color-4)')) {
+    colorVariable = document.documentElement.style.getPropertyValue('--color-4');
+}
+
+// URL
+if( getURlParamater("t") == "offline") {
+    switchinterface(offlinesetup)
+}
+
+if( getURlParamater("t") == "online") {
+    switchinterface(onlinesetup)
+}
+
+if( getURlParamater("t") == "watchai") {
+    switchinterface(watchaisetup)
+}
+
 function cheackfordificulty() {
-    if( getURlParamater("play") == "easy") {
-        difficulty = .05
+    if( getURlParamater("d") == "easy") {
+        difficulty = .0075
         StartGame()
     }
-    if( getURlParamater("play") == "medium") {
-        difficulty = .1
+    if( getURlParamater("d") == "medium") {
+        difficulty = .01
         StartGame()
     }
-    if( getURlParamater("play") == "hard") {
-        difficulty = .25
+    if( getURlParamater("d") == "hard") {
+        difficulty = .015
         StartGame()
     }
 }
 cheackfordificulty()
 
 //Pong Game !!
-
 function StartGame() {
-    playoptions.style.display = 'none'
-    GOScreen.style.display = 'none'
-    offlinesetup.style.display = 'none'
-    onlinesetup.style.display = 'none'
+    switchinterface()
     hasgamestarted = true;
-
     replaybnt.href = "?play="+getURlParamater("play")
 }
 
 function EndGame() {
-    GOScreen.style.display = 'grid'
+    switchinterface(GOScreen)
     hasgamestarted = false; 
 }
-
-let scoreOne = 0;
-let scoreTwo = 0;
 
 // Mouse Controller
 let xM = 0
@@ -100,7 +96,7 @@ function getmousePos(ev){
     yM = ev.clientY;
 }
 
-//Class
+// Class
 class Element {
     constructor(options) {
         this.x = options.x;
@@ -113,7 +109,7 @@ class Element {
     }
 }
 
-//First Paddle / PlayerOne
+// First Paddle / PlayerOne
 const playerOne = new Element({
     x: 0,
     y: canvas.height / 2 - 40,
@@ -121,7 +117,7 @@ const playerOne = new Element({
     height: canvas.height/5,
     color: colorVariable,
 });
-//Second Paddle / PlayerTwo
+// Second Paddle / PlayerTwo
 const playerTwo = new Element({
     x: canvas.width-20,
     y: canvas.height / 2 - 40,
@@ -129,7 +125,7 @@ const playerTwo = new Element({
     height: canvas.height/5,
     color: colorVariable,
 });
-//Ball
+// Ball
 const ball = new Element({
     width: canvas.width/35,
     height: canvas.width/35,
@@ -137,8 +133,6 @@ const ball = new Element({
     speed: 0.25,
     direction: { x: -1, y: 1 }
 });
-
-ResetBall(0, {x:-1, y:1})
 
 function ResetBall(score, velocity = {x:1, y: 1}) {
     ball.x = canvas.width/2 - ball.width/2
@@ -155,6 +149,9 @@ function ResetBall(score, velocity = {x:1, y: 1}) {
         EndGame();
     }
 }
+ResetBall(0, {x:-1, y:1})
+
+// Visualization
 
 // Draw Scores
 function displayScore(score, left) {
@@ -169,13 +166,19 @@ function displayScore(score, left) {
 function drawShadows(lightPosition, objects) {
 }
 
-//draw Element
+// Draw Element
 function drawElement(element) {
     c.fillStyle = element.color;
     c.fillRect(element.x, element.y, element.width, element.height)
 }
 
-//Draw Scene
+// Draw Net
+function drawnet(){
+    c.fillStyle = "rgba(255, 255, 255 ,.75)";
+    c.fillRect(canvas.width/2 -2.5,0,5,canvas.height)
+}
+
+// Draw Scene
 function draw() {
     c.clearRect(0,0,canvas.width,canvas.height)
     drawnet()
@@ -189,14 +192,13 @@ function draw() {
     displayScore(scoreTwo, 1)
     displayScore(scoreOne, -1)
 }
-function drawnet(){
-    c.fillStyle = "rgba(255, 255, 255 ,.75)";
-    c.fillRect(canvas.width/2 -2.5,0,5,canvas.height)
-}
 
+// Game Loop
 
-//loop
-function loop(){
+var lastUpdate = Date.now();
+var dt = 0;
+
+function Loop(){
     var now = Date.now();
     dt = now - lastUpdate;
     lastUpdate = now;
@@ -206,15 +208,17 @@ function loop(){
         moveP1()
         moveP2(difficulty)
         draw();
-        window.requestAnimationFrame(loop);
+        window.requestAnimationFrame(Loop);
     }
 }
-loop();
+Loop();
 
-// Ball 
+// Game Logic
+
+// Move Ball 
 function MoveBall() {
     //Speed Up Ball
-    ball.speed += .00025
+    ball.speed += .000025 * dt
 
     //Move Ball in Direction
     ball.x += ball.speed * ball.velocity.x * dt
@@ -251,23 +255,9 @@ function BallCollisions() {
     MoveBall()
 }
 
-//Collision Testing
+// Collision Testing
 
-//My Solution
-function IsCollision(rect1, rect2) {
-    return (
-        // left | right
-        rect1.x <= rect2.x + rect2.width &&
-        // right | left
-        rect1.x + rect1.width >= rect2.x &&
-        // top | bottom
-        rect1.y <= rect2.y + rect2.height &&
-        // bottom | top
-        rect1.y + rect1.height >= rect2.y
-    )
-}
-
-//ChatGPT Solution
+// ChatGPT Solution
 function isRectangleCollision(rect1, rect2) {
     // Get the center points of each rectangle
     const rect1Center = {
@@ -304,29 +294,59 @@ function isRectangleCollision(rect1, rect2) {
 
 //Move Paddles
 
+function GetMousePaddlePos(paddle) {
+    let Ypos = yM-playerOne.height/2    
+    return Ypos - canvas.getBoundingClientRect().top
+}
+
+function getAiPosition(paddle) {
+        // Get the ball's position
+        const ballX = ball.x + ball.width / 2;
+        const ballY = ball.y + ball.height / 2;
+      
+        // Calculate the distance between the ball and the paddle
+        // const distanceX = ballX - (paddle.x + paddle.width / 2);
+        const distanceY = ballY - (paddle.y + paddle.height / 2);
+      
+        // Move the paddle towards the ball
+        // paddle.x += distanceX * difficulty * dt;
+        // paddle.y += distanceY * difficulty * dt;
+
+        return paddle.y + distanceY * difficulty * dt;
+}
+
+function getOnlinePosition(paddle) {
+    return
+}
+
 function moveP1() {
-    let Ypos 
-    Ypos = yM-playerOne.height/2    
-    if(Ypos > canvas.getBoundingClientRect().top){  
-        playerOne.y = Ypos - canvas.getBoundingClientRect().top
-    }else{ playerOne.y = 0}
-    if(Ypos > canvas.getBoundingClientRect().top+canvas.height-playerOne.height){  
-        playerOne.y = canvas.height-playerOne.height
+    if(mode == "pvai") {
+        playerOne.y = GetMousePaddlePos(playerOne)
+    } else if(mode == "aivai") {
+        playerOne.y = getAiPosition(playerOne)
+    } else if(mode == "pvp") {
+
+    }
+
+    // Keep the paddle within the boundaries of the canvas
+    if (playerOne.x < 0) {
+        playerOne.x = 0;
+    } else if (playerOne.x + playerOne.width > canvas.width) {
+        playerOne.x = canvas.width - playerOne.width;
+    }
+    if (playerOne.y < 0) {
+        playerOne.y = 0;
+    } else if (playerOne.y + playerOne.height > canvas.height) {
+        playerOne.y = canvas.height - playerOne.height;
     }
 }
 
 function moveP2( difficulty = 0.1) {
-    // Get the ball's position
-    const ballX = ball.x + ball.width / 2;
-    const ballY = ball.y + ball.height / 2;
-  
-    // Calculate the distance between the ball and the paddle
-    const distanceX = ballX - (playerTwo.x + playerTwo.width / 2);
-    const distanceY = ballY - (playerTwo.y + playerTwo.height / 2);
-  
-    // Move the paddle towards the ball
-    //playerTwo.x += distanceX * difficulty;
-    playerTwo.y += distanceY * difficulty;
+    if(mode == "pvai" || mode == "aivai") {
+        playerTwo.y = getAiPosition(playerTwo)
+    } else if(mode == "pvp") {
+        
+    }
   
     // Keep the paddle within the boundaries of the canvas
     if (playerTwo.x < 0) {
