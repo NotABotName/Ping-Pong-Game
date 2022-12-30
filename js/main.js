@@ -1,6 +1,22 @@
 import {getURlParamater, addURLParamter} from './modules/URLParams.js';
 
-//HTML Variables
+function playAudio(path) {
+    // let audio = new Audio(path)
+    // audio.play()
+}
+
+// Networking
+const createroomlink = document.getElementById('CreateRoom')
+
+function uuidv4() {
+    return ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c =>
+      (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+    );
+}
+createroomlink.href = "/%room="+uuidv4()
+
+
+// HTML Variables
 const canvas = document.getElementById("Canvas")
 const replaybnt = document.getElementById("play-again")
 var c = canvas.getContext("2d")
@@ -77,7 +93,7 @@ cheackfordificulty()
 function StartGame() {
     switchinterface()
     hasgamestarted = true;
-    replaybnt.href = "?play="+getURlParamater("play")
+    replaybnt.href = "?d="+getURlParamater("d")+"&m="+getURlParamater("m")
 }
 
 function EndGame() {
@@ -134,22 +150,27 @@ const ball = new Element({
     direction: { x: -1, y: 1 }
 });
 
-function ResetBall(score, velocity = {x:1, y: 1}) {
-    ball.x = canvas.width/2 - ball.width/2
-    ball.y = canvas.height/2 - ball.height/2
-    ball.speed = 0.25
-    ball.velocity = velocity
+let prvvelocity = 1
+function ResetBall(score) {
+    prvvelocity *= -1;
+    ball.speed = 0;
+    ball.velocity = {x: prvvelocity*-1, y: 1};
+
     if(score == 1) {
         scoreOne += 1
     } else if(score == 2) {
         scoreTwo += 1
     }
 
+    ball.x = canvas.width/2 - ball.width/2
+    ball.y = canvas.height/2 - ball.height/2
+    ball.speed = 0.25
+
     if(scoreOne >= 5 || scoreTwo >= 5) {
         EndGame();
     }
 }
-ResetBall(0, {x:-1, y:1})
+ResetBall(0)
 
 // Visualization
 
@@ -164,6 +185,10 @@ function displayScore(score, left) {
 
 // ChatGPT Shadows
 function drawShadows(lightPosition, objects) {
+}
+
+// Draw Background 
+function drawBackground() {
 }
 
 // Draw Element
@@ -181,6 +206,7 @@ function drawnet(){
 // Draw Scene
 function draw() {
     c.clearRect(0,0,canvas.width,canvas.height)
+    drawBackground();
     drawnet()
     drawShadows(
         {x: ball.x - ball.width/2, y: ball.y - ball.height/2},
@@ -231,25 +257,30 @@ function BallCollisions() {
     if(ball.y + ball.height >= canvas.height || ball.y <= 0) {
         // Bounce
         ball.velocity.y *= -1;
+        playAudio("../sounds/peep.wav")
     }
 
     // Horizontal Walls
     if(ball.x + ball.width >= canvas.width) {
         //Update Scrore
-        ResetBall(1, {x:1, y:1})
+        ResetBall(1)
+        playAudio("../sounds/explosion.wav")
     }
     if(ball.x <= 0) {
         //Update Scrore
-        ResetBall(2, {x:-1, y:1})
+        ResetBall(2)
+        playAudio("../sounds/explosion.wav")
     }
 
     // Paddle Collision
     if(isRectangleCollision(playerOne, ball)) {
         ball.velocity.x *= -1;
+        playAudio("../sounds/peep.wav")
     }
 
     if(isRectangleCollision(playerTwo, ball)) {
         ball.velocity.x *= -1;
+        playAudio("../sounds/peep.wav")
     }
 
     MoveBall()
@@ -313,10 +344,6 @@ function getAiPosition(paddle) {
         // paddle.y += distanceY * difficulty * dt;
 
         return paddle.y + distanceY * difficulty * dt;
-}
-
-function getOnlinePosition(paddle) {
-    return
 }
 
 function moveP1() {
