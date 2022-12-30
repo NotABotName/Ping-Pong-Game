@@ -13,7 +13,11 @@ function uuidv4() {
       (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
     );
 }
-createroomlink.href = "/%room="+uuidv4()
+createroomlink.href = "/?room="+uuidv4()
+
+if( getURlParamater("room") != null) {
+    console.log(getURlParamater("room"))
+}
 
 
 // HTML Variables
