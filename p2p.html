@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>peer to peer test</title>
+</head>
+<body>
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+            font-family: Arial;
+        }
+        body {
+            display: grid;
+            place-items: center;
+        }
+        .form, .top, #MessageBox {
+            width: 500px; 
+            margin: 15px;
+            padding: 20px;
+            background-color: #b1b1b1;
+            border-radius: 10px;
+        }   
+        .form label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 18px;
+        }
+        .form input {
+            width: 100%;
+            padding: 12px 20px;
+            margin: 8px 0;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        .form button {
+            width: 100%;
+            background-color: #4CAF50;
+            color: white;
+            padding: 14px 20px;
+            margin: 8px 0;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .form button:hover {
+            background-color: #45a049;
+        }
+        .message {
+            background-color: #ffffff;
+            padding: 5px;
+            margin-top: 5px;
+            display: flex;
+        }
+        .message > * {
+            margin-left: 5px;
+        }
+        .message > :first-child {
+            color:red;
+        }
+    </style>
+    <div class="top">
+        <h3>My ID Is</h3>
+        <h3 id="MyPeerId"></h3>
+        <h3 id="ConnectionStatus">Connection Status</h3>
+    </div>
+    <div class="form">
+        <label for="PID">Other Peer ID:</label>
+        <input type="text" id="PID" name="PID">
+        <button id="Connect" >Connect</button>
+        <label for="Message">Message:</label>
+        <input type="text" id="Message" name="Message">
+        <button id="Send" >Send</button>
+    </div>
+    <div id="MessageBox">
+        <h3>Messages</h3>
+    </div>
+    <script src="https://unpkg.com/peerjs@1.4.7/dist/peerjs.min.js"></script>
+    <script type="module">
+        const mypeerid = document.getElementById('MyPeerId')
+        const messagebox = document.getElementById('MessageBox')
+        const instatus = document.getElementById('ConnectionStatus')
+
+        const inpeerid = document.getElementById('PID')
+        const inmessage = document.getElementById('Message')
+        const connectbnt = document.getElementById('Connect')
+        const sendbnt = document.getElementById('Send')
+
+        function addMessage(from, message) {
+            const messagecontainer = document.createElement('div')
+            messagecontainer.classList.add('message')
+            const fromel = document.createElement('p')
+            fromel.innerHTML = from
+            const messageel = document.createElement('p')
+            messageel.innerHTML = message
+            messagecontainer.append(fromel, messageel)
+            messagebox.append(messagecontainer)
+        }
+
+        import {initialize, ready, join, send} from './js/modules/ClientPeer.js'
+
+        // Button Events
+        connectbnt.addEventListener('click', function() {
+            if(inpeerid.value != "") {
+                //Click Connect
+                join(inpeerid.value, function(data) {
+                    addMessage("Peer:", data);
+                })
+            }
+        });
+
+        sendbnt.addEventListener('click', function() {
+            if(inmessage.value != "") {
+                //Click Sned
+                addMessage("Self:", inmessage.value);
+                send(inmessage.value)
+            }
+        });
+
+        initialize(
+        function(peer) {
+            // On peer Created
+            mypeerid.innerHTML = peer.id;
+        }, 
+        function(con) {
+            // On Connection 
+            ready(function(data) {
+                addMessage("Peer:", data);
+            })
+        })
+        </script>
+</body>
+</html>

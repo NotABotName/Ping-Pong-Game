@@ -14,10 +14,23 @@ function uuidv4() {
     );
 }
 createroomlink.href = "/?room="+uuidv4()
-
 if( getURlParamater("room") != null) {
     console.log(getURlParamater("room"))
 }
+
+//peer to peer
+var peer = new Peer(null, {
+    debug: 2
+});
+
+peer.on('open', function(id) {
+	console.log('My peer ID is: ' + id);
+});
+
+var conn = peer.connect("0e7460ff-5ec9-4563-b03d-e743567d1f77");
+conn.on('open', function(){
+    console.log("peer connected")
+});
 
 
 // HTML Variables
