@@ -6,7 +6,7 @@ var peerId = null;
 var conn = null;
 var status = null;
 
-export function initialize(OnCreated, OnConnected) {
+export function initialize(OnCreated, OnConnected, ReturnStatus) {
     peer = new Peer();
     peer.on('open', function (id) {
         // Workaround for peer.reconnect deleting previous id
@@ -18,7 +18,14 @@ export function initialize(OnCreated, OnConnected) {
         }
         console.log('ID: ' + peer.id);
         status = "Awaiting connection...";
-        OnCreated(peer)
+
+
+        if(OnCreated != null) {
+            OnCreated(peer)
+        }
+        if(ReturnStatus != null) {
+            ReturnStatus(status)
+        }
     });
 
     peer.on('connection', function (c) {
@@ -34,18 +41,29 @@ export function initialize(OnCreated, OnConnected) {
         conn = c;
         console.log("Connected to: " + conn.peer);
         status = "Connected";
-        OnConnected(conn)
+        if(OnConnected != null) {
+            OnConnected(conn)
+        }
+        if(ReturnStatus != null) {
+            ReturnStatus(status)
+        }
     });
 
     peer.on('disconnected', function () {
         console.log('Connection lost. Please reconnect');
         status = "Connection lost. Please reconnect";
+        if(ReturnStatus != null) {
+            ReturnStatus(status)
+        }
     });
 
     peer.on('close', function() {
         conn = null;
         console.log('Connection destroyed');
         status = "Connection destroyed. Please refresh";
+        if(ReturnStatus != null) {
+            ReturnStatus(status)
+        }
     });
 
     peer.on('error', function (err) {
@@ -55,7 +73,7 @@ export function initialize(OnCreated, OnConnected) {
 }
 
 
-export function ready(OnData) {
+export function ready(OnData, ReturnStatus) {
     conn.on('data', function (data) {
         console.log("Data recieved");
         switch (data) {
@@ -67,10 +85,13 @@ export function ready(OnData) {
     conn.on('close', function () {
         conn = null;
         status = "Connection reset<br>Awaiting connection...";
+        if(ReturnStatus != null) {
+            ReturnStatus(status)
+        }
     });
 }
 
-export function join(JoinId, OnRecive) {
+export function join(JoinId, OnRecive, ReturnStatus) {
     // Close old connection
     if (conn) {
         conn.close();
@@ -84,14 +105,22 @@ export function join(JoinId, OnRecive) {
     conn.on('open', function () {
         console.log("Connected to: " + conn.peer);
         status = "Connected to: " + conn.peer;
+        if(ReturnStatus != null) {
+            ReturnStatus(status)
+        }
     });
 
     // Handle incoming data (messages only since this is the signal sender)
     conn.on('data', function (data) {
-        OnRecive(data);
+        if(OnRecive != null) {
+            OnRecive(data)
+        }
     });
     conn.on('close', function () {
         status = "Connection closed";
+        if(ReturnStatus != null) {
+            ReturnStatus(status)
+        }
     });
 };
 

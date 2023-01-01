@@ -72,6 +72,12 @@ a {
     box-shadow: 0 10px 10px 0 rgba(0, 0, 0, 0.2), 0 8px 22px 0 rgba(0, 0, 0, 0.19);
 }
 
+button:disabled, button:hover:disabled {
+    background-color: gray;
+    color: white;
+    cursor: not-allowed;
+}
+
 /* Main */
 
 canvas {
