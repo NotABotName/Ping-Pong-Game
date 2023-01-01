@@ -319,9 +319,14 @@ function init() {
     function BallCollisions() {
     
         // Vertical Wall
-        if(ball.y + ball.height >= canvas.height || ball.y <= 0) {
+        if(ball.y + ball.height >= canvas.height) {
             // Bounce
-            ball.velocity.y *= -1;
+            ball.velocity.y = -1;
+            playAudio("../sounds/peep.wav")
+        }
+        if(ball.y <= 0) {
+            // Bounce
+            ball.velocity.y = 1;
             playAudio("../sounds/peep.wav")
         }
     
@@ -339,12 +344,12 @@ function init() {
     
         // Paddle Collision
         if(isRectangleCollision(playerOne, ball)) {
-            ball.velocity.x *= -1;
+            ball.velocity.x = 1;
             playAudio("../sounds/peep.wav")
         }
     
         if(isRectangleCollision(playerTwo, ball)) {
-            ball.velocity.x *= -1;
+            ball.velocity.x = -1;
             playAudio("../sounds/peep.wav")
         }
     
