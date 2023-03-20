@@ -6,8 +6,9 @@ var peerId = null;
 var conn = null;
 var status = null;
 
-export function initialize(OnCreated, OnConnected, ReturnStatus) {
+export function initialize(OnCreated, OnConnected, ReturnStatus, OnError) {
     peer = new Peer();
+
     peer.on('open', function (id) {
         // Workaround for peer.reconnect deleting previous id
         if (peer.id === null) {
@@ -68,7 +69,8 @@ export function initialize(OnCreated, OnConnected, ReturnStatus) {
 
     peer.on('error', function (err) {
         console.log(err);
-        alert('' + err);
+        //alert('' + err);
+        OnError(err)
     });
 }
 

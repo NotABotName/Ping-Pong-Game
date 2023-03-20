@@ -37,7 +37,11 @@
             <h3>Play Online</h3>
             <a>Not yet Available</a>
 
-            <button id="CreateRoom" class="btn-1" style="width: 250px" disabled><h3>Create Room</h3></button>
+            <button id="CreateRoom" class="btn-1" style="width: 250px"><h3>Create Room</h3></button>
+            
+            <label for="JoinRoom-InputID">Enter host ID</label>
+            <input type="text" id="JoinRoom-InputID">
+            <button id="JoinRoom" class="btn-1" style="width: 250px"><h3>Join Room</h3></button>            
 
             <a href="/">
                 <button class="btn-1"><h3>Back</h3></button>
@@ -56,7 +60,7 @@
         </div>
 
         <div class="interface" id="lobby-client" style="display: none">
-            <h3>Waiting For Host...</h3>
+            <h3 id="lobbymessage"></h3>
         </div>
 
         <div class="interface" id="play-offline-setup" style="display: none">

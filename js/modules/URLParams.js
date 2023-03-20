@@ -3,8 +3,11 @@ export function getURlParamater(ParamaterNmae) {
     return Paramaters.get(ParamaterNmae)
 }
 
-export function removeURlParamater(ParamaterNmae) {
+export function removeURlParamater(ParamaterName) {
     const Paramaters = new URLSearchParams(window.location.search)
+    Paramaters.delete(ParamaterName);
+    const updatedURL = window.location.origin + window.location.pathname + '?' + Paramaters.toString();
+    return updatedURL;
 }
 
 export function addURLParamter(key, value) {

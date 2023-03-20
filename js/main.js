@@ -24,6 +24,10 @@ const watchaisetup = document.getElementById("watch-ai-setup")
 
 const interfaces = document.getElementsByClassName("interface")
 
+// Networking 
+
+var NetInstanceTypes = ["OwningClient", "ReplicatedClient"]
+
 // Game Variables
 var hasgamestarted = false;
 
@@ -44,57 +48,88 @@ let mode = getURlParamater("m");
 // Networking
 import {initialize, ready, join, send} from './modules/ClientPeer.js'
 const createroombnt = document.getElementById('CreateRoom')
+const joinroombnt = document.getElementById('JoinRoom')
 const connectionstatus = document.getElementById('onlinestatus')
 const onlineplaybtn = document.getElementById('OnlinePlayBtn')
+const joinroomid = document.getElementById('JoinRoom-InputID')
+const lobbymessage = document.getElementById('lobbymessage')
 
 var PeerPosition = 0;
 
+// Create Room With Peer JS
 createroombnt.addEventListener('click', function() {
     initialize(
+        // On peer Created
         function(peer) {
-            // On peer Created
-            addURLParamter("id", peer.id)
             switchinterface(lobbyhost)
         }, 
-        function(conn) {
-            // On Connection 
-            onlineplaybtn.disabled = false
-            ready(function(data) {
-                console.log("recived: "+data)
 
+        // On Connection 
+        function(conn) {
+            onlineplaybtn.disabled = false
+            ready(function(data) {                
                 if(data[0].position != undefined) {
                     PeerPosition = data[0].position.y
-                    console.log(PeerPosition)
+                    //console.log(PeerPosition)
+                } else {
+                    console.log("recived: "+data)
                 }
             })
         },
-        function(status) {
-            connectionstatus.innerHTML = status
+
+        // On ReturnStatus
+        function(ReturnStatus) {
+            console.log("Returnstatus: "+ReturnStatus)
+        },
+
+        // On Error 
+        function(err) {
+            console.log("Return Error: "+err)
         }
+
     )
 })
 
-const id = getURlParamater("id");
-if (id != null) {
-    initialize(
-        function(peer) {
+// Try Join Room
+joinroombnt.addEventListener('click', function() {
+    if(joinroomid.value) {         
+        initialize(
             // On peer Created join url id
-            join(id, function(data) {
-                if(data == 'start') {
-                    mode = "pvp"
-                    StartGame()
+            function(peer) {
+                lobbymessage.innerHTML = "Waiting for Host..."
+                join(joinroomid.value, function(data) {
+                    if(data == 'start') {
+                        mode = "pvp"
+                        StartGame()
+                    }
+                    lobbymessage.innerHTML = data
+                    console.log("recived: "+data)
+                }, function(status) {
+                    if(status == "Connected to: " + joinroomid.value) {
+                        switchinterface(lobbyclient)
+                    }
                 }
-                console.log("recived: "+data)
-                send([{"position": {x: 5, y: 50}}])
-            }, function(status) {
-                if(status == "Connected to: " + id) {
-                    switchinterface(lobbyclient)
-                }
+                )
+            },
+    
+            // On Connection 
+            function(conn) {
+            },
+    
+            // On ReturnStatus
+            function(ReturnStatus) {
+                console.log("Returnstatus: "+ReturnStatus)
+                lobbymessage.innerHTML = ReturnStatus
+            },
+    
+            // On Error 
+            function(err) {
+                console.log("Return Error: "+err)
+                lobbymessage.innerHTML = error
             }
-            );
-        }
-    )
-}
+        )
+    }
+})
 
 onlineplaybtn.addEventListener('click', function() {
     mode = "pvp"
@@ -224,6 +259,8 @@ function init() {
             this.color = options.color;
             this.speed = options.speed || 2;
             this.velocity = options.velocity || { x: 1, y: 1 };
+            this.NetId = options.NetID;
+            this.NetInstanceType = options.NetInstanceType
         }
     }
     // First Paddle / PlayerOne
@@ -267,7 +304,7 @@ function init() {
         ball.speed = 0.25
     
         if(scoreOne >= MaxScore || scoreTwo >= MaxScore) {
-            EndGame();
+            //EndGame();
         }
     }
     ResetBall(0)
@@ -397,6 +434,9 @@ function init() {
     
     function GetMousePaddlePos(paddle) {
         let Ypos = yM-playerOne.height/2    
+        if(mode == "pvp") {
+            send([{"position": {x: 0, y: Ypos}}])
+        }
         return Ypos - canvas.getBoundingClientRect().top
     }
     

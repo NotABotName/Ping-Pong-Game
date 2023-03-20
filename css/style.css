@@ -40,7 +40,7 @@ body {
 
 /* Text */
 
-p {
+p, label {
     font-size: 15pt;
     color: var(--color-4);
 }
@@ -76,6 +76,14 @@ button:disabled, button:hover:disabled {
     background-color: gray;
     color: white;
     cursor: not-allowed;
+}
+
+input {
+    background-color: var(--color-2);
+    color: var(--color-4);
+    font-size: 16px;
+    margin: 10px;
+    padding: 15px;
 }
 
 /* Main */
